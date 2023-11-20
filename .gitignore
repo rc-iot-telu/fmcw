@@ -1,4 +1,4 @@
 *.pyc
 __pycache__
 venv
-./fmcw/asset/objects/*
+fmcw/asset/objects/*
