@@ -2,12 +2,15 @@ import typing
 import pickle
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextLine
-from PyQt5.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton, QTextEdit, QWidget
+from PyQt5.QtWidgets import (
+    QDialog, QFormLayout, QLineEdit,
+    QPushButton, QTextEdit, QWidget
+)
 
-from fmcw.contrib import get_asset, AssetType
+from fmcw.contrib import get_asset, AssetType, get_popup, PopUpLevel
 
 from serial.tools.list_ports import comports
+
 
 
 class SettingDialog(QDialog):
@@ -48,6 +51,8 @@ class SettingDialog(QDialog):
 
         with open(path, "wb") as obj:
             pickle.dump(data, obj)
+
+        get_popup("Successfully Save Configuration!", PopUpLevel.INFO, self)
 
     def _load_data(self):
         data = {}

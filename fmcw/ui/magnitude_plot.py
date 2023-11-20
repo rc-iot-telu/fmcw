@@ -9,17 +9,24 @@ from fmcw.contrib import PlotCanvasWidget
 
 
 class MagnitudePlot(QGroupBox):
-    set_magnitude_data = pyqtSignal(np.ndarray)
-    set_scale = pyqtSignal(tuple)
-
     def __init__(self, parent: typing.Optional['QWidget'] = None) -> None:
         super().__init__(parent)
         self.setTitle("Magnitude Plot")
 
-        self.magnitude_plot = PlotCanvasWidget()
-        self.new_layout = QVBoxLayout()
+        self._magnitude_plot = PlotCanvasWidget()
+        self._new_layout = QVBoxLayout()
 
-        self.new_layout.addWidget(self.magnitude_plot)
+        self._new_layout.addWidget(self._magnitude_plot)
 
-        self.setLayout(self.new_layout)
+        self.setLayout(self._new_layout)
 
+
+    def set_plot(self, mag_data: np.ndarray):
+        self._magnitude_plot.axes.clear()
+
+        line1 = self._magnitude_plot
+        if np.min(mag_data) <= line1.axes.get_ylim()[0] or np.max(mag_data) >= line1.axes.get_ylim()[1]: # type: ignore
+            self._magnitude_plot.axes.set_ylim([np.min(mag_data) - np.std(mag_data), np.max(mag_data) + np.std(mag_data)]) # type: ignore
+
+        self._magnitude_plot.axes.plot(mag_data)
+        self._magnitude_plot.draw_idle()

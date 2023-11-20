@@ -35,12 +35,6 @@ class ControlPanel(QGroupBox):
         self.new_layout.addStretch()
         self.setLayout(self.new_layout)
 
-    def _create_button(self):
-        pass
-
-    def _set_distance_text(self, distance: str):
-        pass
-
     def _open_setting_dialog(self):
         self.setting_dialog.exec()
 
