@@ -21,7 +21,7 @@ class MagnitudePlot(QGroupBox):
         self.setLayout(self._new_layout)
 
 
-    def set_plot(self, mag_data: np.ndarray):
+    def set_plot(self, mag_data: list):
         self._magnitude_plot.axes.clear()
 
         line1 = self._magnitude_plot

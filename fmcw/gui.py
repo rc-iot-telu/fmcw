@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (
 )
 
 from fmcw.contrib import get_asset, AssetType
+from fmcw.controller import RadarController
 from fmcw.ui import ControlPanel, MagnitudePlot, PhasePlot
 
 
@@ -16,11 +17,16 @@ class MainWindows(QMainWindow):
         self.setWindowTitle("FMCW Radar | PUI-PT Intelligent Sensing IoT")
         self.setWindowIcon(QIcon(get_asset("logo.png", AssetType.IMAGE)))
 
+        # UI Component
         self.control_panel = ControlPanel(self)
         self.magnutide_plot = MagnitudePlot(self)
         self.phase_plot = PhasePlot(self)
 
+        # Layout
         self.new_layout = QGridLayout()
+
+        # Controller
+        self.radar_controller = RadarController(self)
 
         self.new_layout.addWidget(self.control_panel, 0, 0, 2, 1)
         self.new_layout.addWidget(self.magnutide_plot, 0, 1, 1, 1)
@@ -34,5 +40,15 @@ class MainWindows(QMainWindow):
 
         self.widget = QWidget(self)
         self.widget.setLayout(self.new_layout)
+
+        self.control_panel.start_radar.connect(self.radar_controller.start_radar)
+        self.control_panel.stop_radar.connect(self.radar_controller.stop_radar)
+
+        self.radar_controller.connect_magnitude_signal_out(
+            self.magnutide_plot.set_plot
+        )
+        self.radar_controller.connect_phase_plot_signal_out(
+            self.phase_plot.set_plot
+        )
 
         self.setCentralWidget(self.widget)

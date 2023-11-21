@@ -10,11 +10,11 @@ from PyQt5.QtCore import QObject, pyqtSignal
 
 
 class FMCWRadar(QObject):
-    phase_signal_out = pyqtSignal(np.ndarray)
+    phase_signal_out = pyqtSignal(float)
     phase_raw_signal_out = pyqtSignal(list)
     phase_plot_signal_out = pyqtSignal(np.ndarray, np.ndarray)
 
-    magnitude_signal_out = pyqtSignal(np.ndarray)
+    magnitude_signal_out = pyqtSignal(list)
 
     reset_buffer = pyqtSignal()
     finished = pyqtSignal()
@@ -89,14 +89,18 @@ class FMCWRadar(QObject):
         try:
             if not self.FMCW_RADAR.is_open:
                 logging.info("[INFO] Open the FMCW Radar...")
-                self.FMCW_RADAR.open()
+                try:
+                    self.FMCW_RADAR.open()
+                except serial.SerialException:
+                    self.finished.emit()
+                    return
         except AttributeError as e:
             self.err_msg.emit(["ERROR: Tidak bisa menggunakan radar", f"Tidak bisa menggunakan radar karena: {e}"])
             self.finished.emit()
             return
 
         # Reset the buffer from the main gui
-        self.reset_buffer.emit(True)
+        self.reset_buffer.emit()
 
         # Do some clean up, just to make sure
         self.FMCW_RADAR.flush()
@@ -115,7 +119,7 @@ class FMCWRadar(QObject):
         while self.get_data:
             try:
                 radar_data = ast.literal_eval(self.FMCW_RADAR.readline().decode("utf-8"))
-            except (SyntaxError, UnicodeDecodeError):
+            except Exception:
                 continue
 
             if not isinstance(radar_data, dict):
@@ -124,10 +128,10 @@ class FMCWRadar(QObject):
             phase_data = radar_data.get("Phase")
             magnitude_data = radar_data.get("FFT")
 
-            if phase_data == "Phase" and peak_index > 0:
+            if phase_data and peak_index > 0:
                 yo_vec[-1] = float(phase_data[peak_index]) * 57.29
 
-                self.phase_raw_signal_out.emit(float(yo_vec[-1]))
+                self.phase_raw_signal_out.emit(phase_data)
 
                 y_vec[-1] = self._process_data_respiro(y_vec, yo_vec)
                 x_vec += 1
@@ -136,7 +140,7 @@ class FMCWRadar(QObject):
                 self.phase_signal_out.emit(y_vec[-1])
 
                 # phase data after filtering for plotting perpose
-                self.phase_plot_signal_out.emit((x_vec) * 0.26, y_vec)
+                self.phase_plot_signal_out.emit((x_vec[462:]) * 0.26, y_vec[462:])
 
                 y_vec = np.append(y_vec[1:], 0.0)
                 yo_vec = np.append(yo_vec[1:], 0.0)

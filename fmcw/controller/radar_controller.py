@@ -21,7 +21,21 @@ class RadarController(QObject):
             logging.error("argument supplied not eppear to be a function.")
             return
 
+        self.radar.phase_raw_signal_out.connect(func)
+
+    def connect_phase_plot_signal_out(self, func):
+        if not callable(func):
+            logging.error("argument supplied not eppear to be a function.")
+            return
+
         self.radar.phase_plot_signal_out.connect(func)
+
+    def connect_magnitude_signal_out(self, func):
+        if not callable(func):
+            logging.error("argument supplied not eppear to be a function.")
+            return
+
+        self.radar.magnitude_signal_out.connect(func)
 
     def start_radar(self, port: str):
         self.radar.set_port(port)
@@ -30,10 +44,10 @@ class RadarController(QObject):
         self.radar_thread.started.connect(self.radar.run)
 
         self.radar.finished.connect(self.radar_thread.quit)
-
+        self.radar_thread.finished.connect(self.radar.stop_radar)
 
         self.radar_thread.start()
 
     def stop_radar(self):
-        pass
+        self.radar.stop_radar()
 

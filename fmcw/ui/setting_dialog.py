@@ -43,6 +43,9 @@ class SettingDialog(QDialog):
         self._refresh_port()
         self.setLayout(self.new_layout)
 
+    def get_radar_port(self) -> str:
+        return self.radar_port.text()
+
     def _save_data(self):
         data = {}
         path = get_asset("setting.dat", AssetType.OBJECT)
