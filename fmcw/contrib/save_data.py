@@ -13,9 +13,9 @@ class RadarData(Enum):
     PHASA = "phase"
 
 
-def save_data_to_csv(data: typing.Union[list, np.ndarray], data_kind: RadarData):
+def save_data_to_csv(data: typing.Union[list, np.ndarray], data_kind: RadarData) -> bool:
     if len(data) < 1:
-        return
+        return False
 
     path = Path(f"~/Documents/{data_kind.value}")
     today = datetime.strftime(datetime.today(), "%d-%b-%Y %H.%M.%S")
@@ -27,3 +27,5 @@ def save_data_to_csv(data: typing.Union[list, np.ndarray], data_kind: RadarData)
         csv_writer = csv.writer(f)
         for d in data:
             csv_writer.writerows([d])
+
+    return True

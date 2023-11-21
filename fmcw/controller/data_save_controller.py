@@ -3,7 +3,7 @@ import typing
 
 from PyQt5.QtCore import QObject
 
-from fmcw.contrib import RadarData, save_data_to_csv
+from fmcw.contrib import RadarData, get_popup, save_data_to_csv, PopUpLevel
 
 
 class DataController(QObject):
@@ -18,8 +18,15 @@ class DataController(QObject):
         }
 
     def save_data(self):
+        is_sucess = False
+
         for label, data in self.data.items():
-            save_data_to_csv(data, label)
+            is_sucess = save_data_to_csv(data, label)
+
+        if is_sucess:
+            get_popup("Successfully save data!", PopUpLevel.INFO)
+        else:
+            get_popup("Failed save data!", PopUpLevel.CRITICAL)
 
     # TODO: consolidate two function into one
     def append_data_phase(self, phase_data: list):
