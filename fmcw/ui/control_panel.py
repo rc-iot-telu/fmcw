@@ -35,8 +35,9 @@ class ControlPanel(QGroupBox):
 
         self.buttons["setting"].clicked.connect(self._open_setting_dialog)
         self.buttons["start"].clicked.connect(self._start_radar)
-
         self.buttons["stop"].clicked.connect(self._stop_radar)
+        self.buttons["save"].clicked.connect(self.save_data.emit)
+
         self.buttons["stop"].setEnabled(False)
 
         self.new_layout.addStretch()
