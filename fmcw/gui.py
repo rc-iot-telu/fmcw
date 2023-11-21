@@ -1,10 +1,12 @@
 import typing
+from PyQt5 import QtGui
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QGridLayout, QMainWindow,
     QWidget
 )
+from matplotlib.backend_bases import CloseEvent
 
 from fmcw.contrib import get_asset, AssetType
 from fmcw.controller import RadarController, DataController
@@ -63,3 +65,9 @@ class MainWindows(QMainWindow):
         )
 
         self.setCentralWidget(self.widget)
+
+    def closeEvent(self, a0: typing.Optional[QtGui.QCloseEvent]) -> None:
+        self.radar_controller.stop_radar()
+
+        return super().closeEvent(a0)
+
